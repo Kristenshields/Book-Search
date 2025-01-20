@@ -9,20 +9,26 @@ const { authMiddleware } = require('./utils/auth');
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-const server = new ApolloServer({
-  typeDefs,
-  resolvers,
-  context: ({ req }) => {
-    const token = req.headers.authorization || '';
-    try {
-      const decoded = jwt.verify(token, 'secret');
-      return { user: decoded };
-    } catch (e) {
-      return { user: null };
-    }
-  },
-});
-  
+async function startApolloServer() {
+  const server = new ApolloServer({
+    typeDefs,
+    resolvers,
+    context: ({ req }) => {
+      const token = req.headers.authorization || '';
+      try {
+        const decoded = jwt.verify(token, 'secret');
+        return { user: decoded };
+      } catch (e) {
+        return { user: null };
+      }
+    },
+  });
+
+  await server.start();
+
+  server.applyMiddleware({ app });
+
+
   app.use(express.urlencoded({ extended: true }));
   app.use(express.json());
 
@@ -30,17 +36,16 @@ const server = new ApolloServer({
     app.use(express.static(path.join(__dirname, '../client/build')));
   }
 
- server.applyMiddleware({ app });
-
-  db.once('open', () => {
-    app.listen(PORT, () => 
-      console.log(`🌍 Now listening on localhost:${PORT}`)
-    );
-});
-
   app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '../client/build/index.html'));
   });
-  
-  module.exports = server;
-  
+
+  db.once('open', () => {
+    app.listen(PORT, () =>
+      console.log(`🌍 Now listening on localhost:${PORT}`)
+    );
+  });
+}
+
+startApolloServer();
+

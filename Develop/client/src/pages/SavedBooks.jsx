@@ -1,11 +1,11 @@
-import { useState } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
 import {
   Container,
   Card,
   Button,
   Row,
-  Col
+  Col,
+  Spinner
 } from 'react-bootstrap';
 import { REMOVE_BOOK } from '../utils/mutations';
 import { removeBookId } from '../utils/localStorage';
@@ -21,7 +21,7 @@ const SavedBooks = () => {
 
   const handleDeleteBook = async (bookId) => {
     try {
-      const { data } = await removeBook({
+      await removeBook({
         variables: { bookId },
         });
 
@@ -40,6 +40,11 @@ const SavedBooks = () => {
       </div>
     );
   }
+
+   // get token
+      const token = Auth.loggedIn() ? Auth.getToken() : null;
+  
+      if (!token) return;
 
   const userData = data?.me || {};
 
