@@ -17,7 +17,7 @@ module.exports = {
     res.json(foundUser);
   },
   // create a user, sign a token, and send it back (to client/src/components/SignUpForm.js)
-  async createUser({ body }, res) {
+  async addUser({ body }, res) {
     const user = await User.create(body);
 
     if (!user) {
@@ -28,7 +28,7 @@ module.exports = {
   },
   // login a user, sign a token, and send it back (to client/src/components/LoginForm.js)
   // {body} is destructured req.body
-  async login({ body }, res) {
+  async loginUser({ body }, res) {
     const user = await User.findOne({ $or: [{ username: body.username }, { email: body.email }] });
     if (!user) {
       return res.status(400).json({ message: "Can't find this user" });
@@ -59,7 +59,7 @@ module.exports = {
     }
   },
   // remove a book from `savedBooks`
-  async deleteBook({ user, params }, res) {
+  async removeBook({ user, params }, res) {
     const updatedUser = await User.findOneAndUpdate(
       { _id: user._id },
       { $pull: { savedBooks: { bookId: params.bookId } } },

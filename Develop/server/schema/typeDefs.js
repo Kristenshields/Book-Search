@@ -28,10 +28,10 @@ type User {
   }
 
   type Mutation {
-    LOGIN_USER(email: String!, password: String!): Auth
-    ADD_USER(username: String!, email: String!, password: String!): Auth
-    SAVE_BOOK(book: BookInput!): User
-    REMOVE_BOOK(bookId: ID!): User
+    loginUser(email: String!, password: String!): Auth
+    addUser(username: String!, email: String!, password: String!): Auth
+    saveBook(book: BookInput!): User
+    removeBook(bookId: ID!): User
   }
 
   input BookInput {

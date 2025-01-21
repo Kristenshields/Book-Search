@@ -1,38 +1,50 @@
+const { GraphQLError } = require('graphql');
 const jwt = require('jsonwebtoken');
+
 
 // set token secret and expiration date
 const secret = 'mysecretsshhhhh';
-const expiration = '2h';
+const expiration = "2h";
 
-module.exports = {
+
   // function for our authenticated routes
-  authMiddleware: function (req) {
-    // allows token to be sent via  req.query or headers
-    let token = req.headers.authorization || '';
+  const authMiddleware = ({ req }) => {
+    const authHeader = req.headers?.authorization || '';
+    console.log('Authotization header:', authHeader);
 
-    
-    if (token.startsWith('Bearer ')) {
-      token = token.slice(7, token.length);
-    }
+     const token = authHeader.split(' ')[1];
+     if (!token) {
+      console.log('no token provided');
+      return { user: null};
+     }
 
-    if (!token) {
-      throw new Error('You have no token!');
-    }
-
-    // verify token and get user data out of it
-    try {
-      const { data } = jwt.verify(token, secret, { maxAge: expiration });
+     try {
+      const { data } = jwt.verify(token, secret, { algorithms: ['HS256'] });
+      console.log('token verified. User data:', data);
       return { user: data };
-    } catch (error) {
-      console.log('Invalid token', error);
-      throw new Error('Invalid token!');
+    } catch (err) {
+      console.error(`Token verification error: ${err.message}`);
+      if (err.name === 'TokenExpiredError') {
+        throw new Error('Token has expired');
+      } else {
+        throw new Error('Invalid token');
     }
-  },
+      }
+    };
+  
+  module.exports = {
+    authMiddleware,
+    AuthenticationError: new GraphQLError('Could not authenticate user.', {
+      extensions: {
+        code: 'UNAUTHENTICATED',
+      },
+    }),
+    signToken: function ({ username, email, _id }) {
+      const payload = { username, email, _id };
+      return jwt.sign({ data: payload }, secret, { expiresIn: expiration });
+    },
+  };
 
   
-  signToken: function ({ username, email, _id }) {
-    const payload = { username, email, _id };
 
-    return jwt.sign({ data: payload }, secret, { expiresIn: expiration });
-  },
-};
+  
