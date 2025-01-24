@@ -16,14 +16,14 @@ class AuthService {
   }
 
   // check if token is expired
-  isTokenExpired(token) {
-    const decoded = decode(token);
-    if (decoded.exp < Date.now() / 1000) {
-      localStorage.removeItem('id_token');
-      return true;
+ isTokenExpired = (token) => {
+    try {
+      const { exp } = jwtDecode(token);
+      return Date.now() >= exp * 1000;
+    } catch {
+      return true; // Treat as expired if decoding fails
     }
-    return false;
-  }
+  };
 
 
   getToken() {

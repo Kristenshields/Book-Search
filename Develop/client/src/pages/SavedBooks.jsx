@@ -8,8 +8,6 @@ import {
   Spinner
 } from 'react-bootstrap';
 import { REMOVE_BOOK } from '../utils/mutations';
-import { removeBookId } from '../utils/localStorage';
-import Auth from '../utils/auth';
 import { GET_ME } from '../utils/queries';
 
 
@@ -18,6 +16,7 @@ const SavedBooks = () => {
   // use this to determine if `useEffect()` hook needs to run again
   const [removeBook] = useMutation(REMOVE_BOOK);
   
+  // need to update
 
   const handleDeleteBook = async (bookId) => {
     try {

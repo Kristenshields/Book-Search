@@ -15,7 +15,7 @@ const SignupForm = () => {
   const [showAlert, setShowAlert] = useState(false);
   
 
-  const [addUser, { error }] = useMutation(ADD_USER);
+  const [addUser] = useMutation(ADD_USER);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -27,7 +27,7 @@ const SignupForm = () => {
     
  
     const form = event.currentTarget;
-    if (!form.checkValidity() === false) {
+    if (form.checkValidity() === false) {
       event.preventDefault();
       event.stopPropagation();
     }
