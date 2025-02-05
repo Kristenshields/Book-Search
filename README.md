@@ -1,4 +1,4 @@
-# 21 MERN: Book Search Engine
+# Book Search 
 
 ## Description
 This application is a Google Books API search engine that allows users to search for books and save their searches. Initially built with a RESTful API, it has been refactored to use a GraphQL API with Apollo Server. The app is built using the MERN stack:
