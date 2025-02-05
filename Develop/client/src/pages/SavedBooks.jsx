@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
 import {
   Container,
@@ -9,19 +10,20 @@ import {
 } from 'react-bootstrap';
 import { REMOVE_BOOK } from '../utils/mutations';
 import { GET_ME } from '../utils/queries';
-
+import Auth from '../utils/auth';
 
 const SavedBooks = () => {
   const { loading, data } = useQuery(GET_ME);
   // use this to determine if `useEffect()` hook needs to run again
   const [removeBook] = useMutation(REMOVE_BOOK);
   
-  // need to update
+ 
 
   const handleDeleteBook = async (bookId) => {
     try {
       await removeBook({
         variables: { bookId },
+        refetchQueries
         });
 
         removeBookId(bookId);

@@ -7,20 +7,18 @@ import {
   Card,
   Row
 } from 'react-bootstrap';
-
 import Auth from '../utils/auth';
-import { searchGoogleBooks } from '../utils/API';
-import { saveBookIds, getSavedBookIds } from '../utils/localStorage';
 import { useMutation, useQuery } from '@apollo/client';
 import { SAVE_BOOK } from '../utils/mutations';
 import { GET_ME } from '../utils/queries';
-import { use } from 'react';
+
+
 
 const searchGoogleBooks = (query) => {
   return fetch(`https://www.googleapis.com/books/v1/volumes?q=${query}`);
-}
+};
 
-// need to update
+
 
 const SearchBooks = () => {
   // create state for holding returned google api data
@@ -30,23 +28,20 @@ const SearchBooks = () => {
   const { data } = useQuery(GET_ME);
   // create state to hold saved bookId values
   const saveBook = useMutation(SAVE_BOOK);
- const userData = data?.me || {};
-  const savedBookIds = userData.savedBooks?.map((book) => book.bookId) || [];
+  const userData = data?.me || {};
+  const savedBookIds = userData.savedBooks?.map(book => book.bookId) || [];
 
   // set up useEffect hook to save `savedBookIds` list to localStorage on component unmount
   // learn more here: https://reactjs.org/docs/hooks-effect.html#effects-with-cleanup
-  useEffect(() => {
-    return () => saveBookIds(savedBookIds);
-  }, [savedBookIds]);
-
+ 
   // create method to search for books and set state on form submit
   const handleFormSubmit = async (event) => {
     event.preventDefault();
-    if (!searchInput.trim()) return;
+    if (!searchInput) return false;
     
 
     try {
-      const response = await searchGoogleBooks(searchInput.trim( ));
+      const response = await searchGoogleBooks(searchInput);
 
       if (!response.ok) throw new Error('something went wrong!');
       
@@ -76,15 +71,12 @@ const SearchBooks = () => {
     // get token
     const token = Auth.loggedIn() ? Auth.getToken() : null;
 
-    if (!token) return;
+    if (!token) return false;
     
 
     try {
-      const { data } = await saveBookMutation({ variables: { bookInput: bookToSave } });
+      await saveBook({ variables: { bookData: bookToSave }, refetchQueries: [{ query: GET_ME }] });
 
-      if (data.saveBook) {
-        setSavedBookIds([...savedBookIds, bookToSave.bookId]);
-      }
     } catch (err) {
       console.error(err);
     }

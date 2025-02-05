@@ -10,7 +10,7 @@ const LoginForm = () => {
     email: '', 
     password: '' 
   });
-  const [validated] = useState(false);
+  const [validated, setValidated] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
 
   const [loginUser] = useMutation(LOGIN_USER);
@@ -26,8 +26,9 @@ const LoginForm = () => {
     // check if form has everything (as per react-bootstrap docs)
     const form = event.currentTarget;
     if (form.checkValidity() === false) {
-      event.preventDefault();
       event.stopPropagation();
+      setValidated(true);
+      return;
     }
 
     try {
@@ -35,7 +36,7 @@ const LoginForm = () => {
         variables: { ...userFormData },
       });
 
-      const { token } = data.loginUser;
+      const { token } = data.login;
       Auth.login(token);  
     } catch (err) {
       console.error(err);

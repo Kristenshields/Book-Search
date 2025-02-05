@@ -11,7 +11,7 @@ const SignupForm = () => {
     email: '', 
     password: '' 
   });
-  const [validated] = useState(false);
+  const [validated, setValidated] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
   
 
@@ -28,8 +28,9 @@ const SignupForm = () => {
  
     const form = event.currentTarget;
     if (form.checkValidity() === false) {
-      event.preventDefault();
       event.stopPropagation();
+      setValidated(true);
+      return;
     }
 
     try {
